@@ -20,9 +20,9 @@ import "google/descriptor.proto";
 
 // define static message fields for meta data
 extend google.protobuf.MessageOptions {
-	optional int32 MessageTypeIndex = 50001; // message type index
-	optional string MessageExtensionPrefix = 50002; // message type name prefix
-	optional string MessageEnumNamePrefix = 50003; // message enum name prefix
+	optional int32 optionTypeIndex = 50001; // message type index
+	optional string optionExtensionPrefix = 50002; // message type name prefix
+	optional string optionEnumNamePrefix = 50003; // message enum name prefix
 }
 
 // message type
@@ -75,8 +75,8 @@ extend Base {
 
 // message base for extensions / sub types
 message Base {
-	option (MessageEnumNamePrefix) = "Type_"; // rule for enum names
-	option (MessageExtensionPrefix) = "message"; // rule for extension names
+	option (.barchart.optionEnumNamePrefix) = "Type_"; // rule for enum names
+	option (optionExtensionPrefix) = "message"; // rule for extension names
 	extensions 100 to max; // message polymorph range
 	//
 	optional MessageType type = 1; // message type selector
