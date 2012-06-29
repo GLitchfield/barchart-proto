@@ -1,0 +1,15 @@
+package barchart; // non-java (C, C++, etc) package name space
+
+//
+option java_package = "com.barchart.proto.fixbuf";
+option java_outer_classname = "FieldFactory";
+option java_multiple_files = true;
+option java_generate_equals_and_hash = true;
+//
+option optimize_for = SPEED;
+
+// price representation
+message Decimal {
+	optional sint64 mantissa = 1;
+	optional sint32 exponent = 2;
+}

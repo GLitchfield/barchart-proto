@@ -5,7 +5,7 @@
 package barchart; // non-java (C, C++, etc) package name space
 
 //
-option java_package = "com.barchart.proto.feed";
+option java_package = "com.barchart.proto.buf";
 option java_outer_classname = "FieldFactory";
 option java_multiple_files = true;
 option java_generate_equals_and_hash = true;

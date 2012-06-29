@@ -5,7 +5,7 @@
 package barchart; // non-java (C, C++, etc) package name space
 
 //
-option java_package = "com.barchart.proto.feed";
+option java_package = "com.barchart.proto.buf";
 option java_outer_classname = "MessageFactory";
 option java_multiple_files = true;
 option java_generate_equals_and_hash = true;
@@ -21,71 +21,72 @@ import "google/descriptor.proto";
 // define static message fields for meta data
 extend google.protobuf.MessageOptions {
 	optional int32 MessageTypeIndex = 50001; // message type index
-	optional string MessageTypePrefix = 50002; // message type name prefix
-	optional string MessageEnumPrefix = 50003; // message enum name prefix
+	optional string MessageExtensionPrefix = 50002; // message type name prefix
+	optional string MessageEnumNamePrefix = 50003; // message enum name prefix
 }
 
 // message type
-// note: these enum entries are global to proto file
 // note: order by most frequent first
-enum Type {
-	enum_MarketData = 100;
-	enum_MarketNews = 101;
+// note: must use prefix due to global scope
+enum MessageType {
+	Type_MarketData = 100;
+	Type_MarketNews = 101;
 	//
-	enum_DataSubscribeRequest = 102;
-	enum_DataSubscribeResponse = 103;
+	Type_DataSubscribeRequest = 102;
+	Type_DataSubscribeResponse = 103;
 	//
-	enum_NewsSubscribeRequest = 104;
-	enum_NewsSubscribeResponse = 105;
+	Type_NewsSubscribeRequest = 104;
+	Type_NewsSubscribeResponse = 105;
 	//
-	enum_InstrumentRequest = 106;
-	enum_InstrumentResponse = 107;
+	Type_InstrumentRequest = 106;
+	Type_InstrumentResponse = 107;
 	//
-	enum_LoginRequest = 108;
-	enum_LoginResponse = 109;
+	Type_LoginRequest = 108;
+	Type_LoginResponse = 109;
 	//
-	enum_MarketStatus = 110;
+	Type_MarketStatus = 110;
 	//
-	enum_HeartBeat = 111;
+	Type_HeartBeat = 111;
 }
 
 // forward declaration of sub types / extensions
-// note: keep type in sync with enum
+// note: keep in sync with enum
+// note: must use prefix due to global scope
 extend Base {
-	optional MarketData type_MarketData = 100;
-	optional MarketNews type_MarketNews = 101;
+	optional MarketData messageMarketData = 100;
+	optional MarketNews messageMarketNews = 101;
 	//
-	optional DataSubscribeRequest type_DataSubscribeRequest = 102;
-	optional DataSubscribeResponse type_DataSubscribeResponse = 103;
+	optional DataSubscribeRequest messageDataSubscribeRequest = 102;
+	optional DataSubscribeResponse messageDataSubscribeResponse = 103;
 	//
-	optional NewsSubscribeRequest type_NewsSubscribeRequest = 104;
-	optional NewsSubscribeResponse type_NewsSubscribeResponse = 105;
+	optional NewsSubscribeRequest messageNewsSubscribeRequest = 104;
+	optional NewsSubscribeResponse messageNewsSubscribeResponse = 105;
 	//
-	optional LoginRequest type_LoginRequest = 106;
-	optional LoginResponse type_LoginResponse = 107;
+	optional LoginRequest messageLoginRequest = 106;
+	optional LoginResponse messageLoginResponse = 107;
 	//
-	optional InstrumentRequest type_InstrumentRequest = 108;
-	optional InstrumentResponse type_InstrumentResponse = 109;
+	optional InstrumentRequest messageInstrumentRequest = 108;
+	optional InstrumentResponse messageInstrumentResponse = 109;
 	//
-	optional MarketStatus type_MarketStatus = 110;
+	optional MarketStatus messageMarketStatus = 110;
 	//
-	optional HeartBeat type_HeartBeat = 111;
+	optional HeartBeat messageHeartBeat = 111;
 }
 
 // message base for extensions / sub types
 message Base {
-	option (MessageEnumPrefix) = "enum_"; // rule for enum names
-	option (MessageTypePrefix) = "type_"; // rule for type names
-	extensions 100 to max; // message polymorph
+	option (MessageEnumNamePrefix) = "Type_"; // rule for enum names
+	option (MessageExtensionPrefix) = "message"; // rule for extension names
+	extensions 100 to max; // message polymorph range
 	//
-	optional Type type = 1; // message type selector
+	optional MessageType type = 1; // message type selector
 	optional int64 sequence = 2; // message sequence number
 	optional int64 timeStamp = 3; // message time stamp, millis UTC
 }
 
 // ##################################################
 
-// the only market data state change message type
+// one and only market data state change message
 message MarketData {
 	enum Type {
 		UPDATE = 0;
