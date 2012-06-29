@@ -16,9 +16,9 @@ public class MessageCodec {
 	private static final Logger log = LoggerFactory
 			.getLogger(MessageCodec.class);
 
-	/** from specific message type into base extension descriptor */
-	private static final Map<Class<Message>, GeneratedExtension<Base, Message>> //
-	messageExtensionMap = new ConcurrentHashMap<Class<Message>, GeneratedExtension<Base, Message>>();
+	/** from specific message type into type/extension */
+	private static final Map<Class<Message>, MessageMeta> //
+	messageMetaMap = new ConcurrentHashMap<Class<Message>, MessageMeta>();
 
 	private static final ExtensionRegistry registry;
 
@@ -30,22 +30,25 @@ public class MessageCodec {
 
 	}
 
+	/**
+	 * note: 1) extension name contract; 2) enum name contract; 3) enum +
+	 * extendson number contract
+	 */
 	private static void prepareExtensions(final ExtensionRegistry registry) {
 
 		MessageSpec.registerAllExtensions(registry);
 
-		/** extension name convention */
 		final String prefix = Base.getDescriptor().getOptions()
 				.getExtension(MessageSpec.optionExtensionPrefix);
 
 		for (final Field field : MessageSpec.class.getDeclaredFields()) {
 
-			final String name = field.getName();
-			final Class<?> type = field.getType();
+			final String fieldName = field.getName();
+			final Class<?> fieldType = field.getType();
 
-			final boolean isNameMatch = name.startsWith(prefix);
+			final boolean isNameMatch = fieldName.startsWith(prefix);
 			final boolean isTypeMatch = GeneratedExtension.class
-					.isAssignableFrom(type);
+					.isAssignableFrom(fieldType);
 
 			final boolean isMessageExtension = isNameMatch && isTypeMatch;
 
@@ -61,7 +64,13 @@ public class MessageCodec {
 					final Class<Message> klaz = (Class<Message>) extension
 							.getMessageDefaultInstance().getClass();
 
-					messageExtensionMap.put(klaz, extension);
+					final int number = extension.getDescriptor().getNumber();
+
+					final MessageType type = MessageType.valueOf(number);
+
+					final MessageMeta meta = new MessageMeta(type, extension);
+
+					messageMetaMap.put(klaz, meta);
 
 				} catch (final Exception e) {
 					log.error("can not prepare message extenstion", e);
@@ -77,13 +86,8 @@ public class MessageCodec {
 	private static <T extends Message> T castType(final Base message,
 			final Class<T> klaz) throws Exception {
 
-		final GeneratedExtension<Base, Message> extension = messageExtensionMap
-				.get(klaz);
-
-		if (extension == null) {
-			throw new IllegalStateException("missing message extenstion : {}"
-					+ klaz);
-		}
+		final GeneratedExtension<Base, Message> extension = messageMetaMap
+				.get(klaz).extension;
 
 		return (T) message.getExtension(extension);
 	}
@@ -123,17 +127,14 @@ public class MessageCodec {
 
 	}
 
-	/** TODO make type safe */
-	public static <T extends Message> Base wrap(final MessageType messageType,
-			final T message) {
+	public static <T extends Message> Base wrap(final T message) {
 
 		final Class<? extends Message> klaz = message.getClass();
 
-		final GeneratedExtension<Base, Message> extension = messageExtensionMap
-				.get(klaz);
+		final MessageMeta meta = messageMetaMap.get(klaz);
 
-		return Base.newBuilder().setType(messageType)
-				.setExtension(extension, message).build();
+		return Base.newBuilder().setType(meta.type)
+				.setExtension(meta.extension, message).build();
 
 	}
 

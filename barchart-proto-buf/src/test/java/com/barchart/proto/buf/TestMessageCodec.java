@@ -50,8 +50,7 @@ public class TestMessageCodec {
 		final MarketData loginRequest = MarketData.newBuilder()
 				.setMarketId(123).build();
 
-		final Base base = MessageCodec.wrap(MessageType.Type_MarketData,
-				loginRequest);
+		final Base base = MessageCodec.wrap(loginRequest);
 
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
@@ -73,8 +72,7 @@ public class TestMessageCodec {
 		final MarketNews loginRequest = MarketNews.newBuilder()
 				.setMarketId(456).build();
 
-		final Base base = MessageCodec.wrap(MessageType.Type_MarketNews,
-				loginRequest);
+		final Base base = MessageCodec.wrap(loginRequest);
 
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
