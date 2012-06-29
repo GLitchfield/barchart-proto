@@ -20,11 +20,10 @@ public class MessageCodec {
 	private static final Map<Class<Message>, MessageMeta> //
 	messageMetaMap = new ConcurrentHashMap<Class<Message>, MessageMeta>();
 
-	private static final ExtensionRegistry registry;
+	private static final ExtensionRegistry //
+	registry = ExtensionRegistry.newInstance();
 
 	static {
-
-		registry = ExtensionRegistry.newInstance();
 
 		prepareExtensions(registry);
 

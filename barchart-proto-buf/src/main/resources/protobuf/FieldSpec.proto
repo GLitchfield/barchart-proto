@@ -1,4 +1,6 @@
 /**
+ * https://developers.google.com/protocol-buffers/docs/proto
+ *
  * factory for message fields
  */
 //
@@ -12,7 +14,7 @@ option java_generate_equals_and_hash = true;
 //
 option optimize_for = SPEED;
 
-// price
+// price, size, percent
 message Decimal {
 	optional sint64 mantissa = 1;
 	optional sint32 exponent = 2;
@@ -58,6 +60,7 @@ message MarketNewsEntry {
 		TODO_0 = 0;
 		TODO_1 = 1;
 	}
+
 	optional int64 marketId = 1;
 	optional string url = 2;
 	optional string strory = 4;
