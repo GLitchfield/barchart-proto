@@ -47,10 +47,10 @@ public class TestMessageCodec {
 
 		assertEquals(id1, 0);
 
-		final MarketData loginRequest = MarketData.newBuilder()
-				.setMarketId(123).build();
+		final MarketData message = MarketData.newBuilder().setMarketId(123)
+				.build();
 
-		final Base base = MessageCodec.wrap(loginRequest);
+		final Base base = MessageCodec.wrap(message);
 
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
@@ -69,10 +69,10 @@ public class TestMessageCodec {
 
 		assertEquals(id2, 0);
 
-		final MarketNews loginRequest = MarketNews.newBuilder()
-				.setMarketId(456).build();
+		final MarketNews message = MarketNews.newBuilder().setMarketId(456)
+				.build();
 
-		final Base base = MessageCodec.wrap(loginRequest);
+		final Base base = MessageCodec.wrap(message);
 
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
