@@ -23,13 +23,34 @@ public class TestMessageCodec {
 	public void tearDown() throws Exception {
 	}
 
+	private long id1;
+	private long id2;
+
+	private final MessageVisitor visitor = new MessageVisitor.Adaptor() {
+
+		@Override
+		public void visit(final MarketData message) {
+			log.debug("got MarketData {}", message);
+			id1 = message.getMarketId();
+		}
+
+		@Override
+		public void visit(final MarketNews message) {
+			log.debug("got MarketNews {}", message);
+			id2 = message.getMarketId();
+		}
+
+	};
+
 	@Test
-	public void test() throws Exception {
+	public void test1() throws Exception {
+
+		assertEquals(id1, 0);
 
 		final MarketData loginRequest = MarketData.newBuilder()
 				.setMarketId(123).build();
 
-		final Base base = MessageCodec.wrap(MessageType.Type_LoginRequest,
+		final Base base = MessageCodec.wrap(MessageType.Type_MarketData,
 				loginRequest);
 
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -38,25 +59,45 @@ public class TestMessageCodec {
 
 		final byte[] array = output.toByteArray();
 
-		final MessageVisitor visitor = new MessageVisitor() {
+		MessageCodec.decode(visitor, array);
 
-			@Override
-			public void visit(final MarketData message) {
+		assertEquals(id1, 123);
 
-				log.debug("got MarketData {}", message);
+	}
 
-				assertEquals(message.getMarketId(), 123);
+	@Test
+	public void test2() throws Exception {
 
-			}
+		assertEquals(id2, 0);
 
-			@Override
-			public void visit(final MarketNews message) {
+		final MarketNews loginRequest = MarketNews.newBuilder()
+				.setMarketId(456).build();
 
-			}
+		final Base base = MessageCodec.wrap(MessageType.Type_MarketNews,
+				loginRequest);
 
-		};
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+		base.writeTo(output);
+
+		final byte[] array = output.toByteArray();
 
 		MessageCodec.decode(visitor, array);
 
+		assertEquals(id2, 456);
+
 	}
+
+	public static void main(final String... args) throws Exception {
+
+		log.debug("init");
+
+		MessageCodec.decode(null);
+
+		// new TestMessageCodec().test();
+
+		log.debug("done");
+
+	}
+
 }

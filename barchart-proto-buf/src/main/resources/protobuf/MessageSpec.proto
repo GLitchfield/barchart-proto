@@ -12,11 +12,11 @@ option java_generate_equals_and_hash = true;
 //
 option optimize_for = SPEED;
 
+// message options descriptor
+import "google/protobuf/descriptor.proto";
+
 // message fields
 import "FieldSpec.proto";
-
-// message options descriptor
-import "google/descriptor.proto";
 
 // define static message fields for meta data
 extend google.protobuf.MessageOptions {
@@ -75,7 +75,7 @@ extend Base {
 
 // message base for extensions / sub types
 message Base {
-	option (.barchart.optionEnumNamePrefix) = "Type_"; // rule for enum names
+	option (optionEnumNamePrefix) = "Type_"; // rule for enum names
 	option (optionExtensionPrefix) = "message"; // rule for extension names
 	extensions 100 to max; // message polymorph range
 	//

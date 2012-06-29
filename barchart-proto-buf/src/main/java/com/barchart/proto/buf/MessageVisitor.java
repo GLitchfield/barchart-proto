@@ -1,12 +1,11 @@
 package com.barchart.proto.buf;
 
+/** TODO more types */
 public interface MessageVisitor {
 
 	void visit(MarketData message);
 
 	void visit(MarketNews message);
-
-	// TODO more types
 
 	//
 

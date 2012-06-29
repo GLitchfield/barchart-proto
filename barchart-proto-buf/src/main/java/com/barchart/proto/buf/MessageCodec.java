@@ -16,6 +16,10 @@ public class MessageCodec {
 	private static final Logger log = LoggerFactory
 			.getLogger(MessageCodec.class);
 
+	/** from specific message type into base extension descriptor */
+	private static final Map<Class<Message>, GeneratedExtension<Base, Message>> //
+	messageExtensionMap = new ConcurrentHashMap<Class<Message>, GeneratedExtension<Base, Message>>();
+
 	private static final ExtensionRegistry registry;
 
 	static {
@@ -26,13 +30,11 @@ public class MessageCodec {
 
 	}
 
-	private static final Map<Class<Message>, GeneratedExtension<Base, Message>> //
-	typeMap = new ConcurrentHashMap<Class<Message>, GeneratedExtension<Base, Message>>();
-
 	private static void prepareExtensions(final ExtensionRegistry registry) {
 
 		MessageSpec.registerAllExtensions(registry);
 
+		/** extension name convention */
 		final String prefix = Base.getDescriptor().getOptions()
 				.getExtension(MessageSpec.optionExtensionPrefix);
 
@@ -56,9 +58,10 @@ public class MessageCodec {
 					(GeneratedExtension<Base, Message>) field.get(null);
 
 					@SuppressWarnings("unchecked")
-					final Class<Message> klaz = (Class<Message>) type;
+					final Class<Message> klaz = (Class<Message>) extension
+							.getMessageDefaultInstance().getClass();
 
-					typeMap.put(klaz, extension);
+					messageExtensionMap.put(klaz, extension);
 
 				} catch (final Exception e) {
 					log.error("can not prepare message extenstion", e);
@@ -74,10 +77,12 @@ public class MessageCodec {
 	private static <T extends Message> T castType(final Base message,
 			final Class<T> klaz) throws Exception {
 
-		final GeneratedExtension<Base, Message> extension = typeMap.get(klaz);
+		final GeneratedExtension<Base, Message> extension = messageExtensionMap
+				.get(klaz);
 
 		if (extension == null) {
-			log.error("missing message extenstion : {}", klaz);
+			throw new IllegalStateException("missing message extenstion : {}"
+					+ klaz);
 		}
 
 		return (T) message.getExtension(extension);
@@ -85,11 +90,11 @@ public class MessageCodec {
 
 	public static Base decode(final byte[] array) throws Exception {
 
-		/** use the registry so extensions will be decoded */
 		return Base.newBuilder().mergeFrom(array, registry).build();
 
 	}
 
+	/** TODO more types */
 	public static void decode(final MessageVisitor visitor, final byte[] array)
 			throws Exception {
 
@@ -109,8 +114,6 @@ public class MessageCodec {
 			visitor.visit(castType(base, MarketNews.class));
 			break;
 
-		// TODO more types
-
 		default:
 			log.error("missing message type : {}", type);
 			break;
@@ -120,12 +123,14 @@ public class MessageCodec {
 
 	}
 
+	/** TODO make type safe */
 	public static <T extends Message> Base wrap(final MessageType messageType,
 			final T message) {
 
 		final Class<? extends Message> klaz = message.getClass();
 
-		final GeneratedExtension<Base, Message> extension = typeMap.get(klaz);
+		final GeneratedExtension<Base, Message> extension = messageExtensionMap
+				.get(klaz);
 
 		return Base.newBuilder().setType(messageType)
 				.setExtension(extension, message).build();
