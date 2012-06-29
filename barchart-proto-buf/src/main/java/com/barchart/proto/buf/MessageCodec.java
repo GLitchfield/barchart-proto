@@ -82,7 +82,7 @@ public class MessageCodec {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	private static <T extends Message> T castType(final Base message,
 			final Class<T> klaz) throws Exception {
 
@@ -112,10 +112,10 @@ public class MessageCodec {
 
 		switch (type) {
 		case MarketDataType:
-			visitor.visit(castType(base, MarketData.class));
+			visitor.visit(base.getExtension(MessageSpec.messageMarketData));
 			break;
 		case MarketNewsType:
-			visitor.visit(castType(base, MarketNews.class));
+			visitor.visit(base.getExtension(MessageSpec.messageMarketNews));
 			break;
 
 		default:
