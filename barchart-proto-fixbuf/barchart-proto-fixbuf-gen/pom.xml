@@ -1,0 +1,144 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.barchart.proto</groupId>
+		<artifactId>barchart-proto-fixbuf</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>barchart-proto-fixbuf-gen</artifactId>
+	<packaging>jar</packaging>
+
+	<description>
+		barchart protocol generator
+		fix -> protocol buffers
+	</description>
+
+	<scm>
+		<url>https://github.com/barchart/barchart-proto</url>
+		<connection>scm:git:git://github.com/barchart/barchart-proto.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/barchart/barchart-proto.git</developerConnection>
+	</scm>
+
+	<properties>
+
+	</properties>
+
+	<dependencies>
+
+		<!-- protocol buffers -->
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${barchartProtobufVersion}</version>
+		</dependency>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-imports</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/main/resources/protobuf</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+							<outputDirectory>target/protobuf</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>pack-output</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>target/protobuf</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+							<outputDirectory>target/classes/protobuf</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>compile-generator</id>
+						<phase>compile</phase>
+						<configuration>
+							<verbose>true</verbose>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<id>generate-protocol</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<includePluginDependencies>false</includePluginDependencies>
+							<includeProjectDependencies>true</includeProjectDependencies>
+							<mainClass>com.barchart.proto.fixbuf.gen.GenFixBuf</mainClass>
+							<arguments>
+								<!-- fix spec -->
+								<argument>${basedir}/src/main/resources/fix</argument>
+								<!-- fix transform -->
+								<argument>${basedir}/src/main/resources/buf</argument>
+								<!-- output -->
+								<argument>${basedir}/target/protobuf</argument>
+							</arguments>
+							<systemProperties>
+								<systemProperty>
+									<key>some-key</key>
+									<value>some-value</value>
+								</systemProperty>
+							</systemProperties>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>

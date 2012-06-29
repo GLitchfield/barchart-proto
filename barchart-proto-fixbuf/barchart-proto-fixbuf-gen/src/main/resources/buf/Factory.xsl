@@ -1,4 +1,6 @@
-<!-- -->
+<!-- 
+	template to convert form fix to protocol buffers
+-->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	version="1.0">
@@ -10,7 +12,7 @@
 
 	<xsl:template match="/">
 	
-		package barchart; // non-java package name space
+		package barchart; // non-java (C, C++, etc) package name space
 
 		option java_package = "<xsl:value-of select="$java_package"/>";
 		option java_outer_classname = "<xsl:value-of select="$java_outer_classname"/>";
@@ -22,16 +24,18 @@
 		// note: enum entries are global on proto file level
 		enum Type { // FIX MESSAGE TYPE
 	    <xsl:for-each select="fix/messages/message">
-			Type<xsl:value-of select="@name" /> = <xsl:value-of select="100 + position()" /> ; // type="<xsl:value-of select="@msgtype" />"
+			type<xsl:value-of select="@name" /> = <xsl:value-of select="100 + position()" /> ; // type="<xsl:value-of select="@msgtype" />"
 	    </xsl:for-each>		 
 		}
 
-		// base dir for import is a location of current proto file  
+		// note: base dir for import is a location of current proto file  
 		import "google/descriptor.proto";
+		import "FieldFactory.proto";
 
-		extend google.protobuf.MessageOptions {
-		  optional string TypeCode = 50001;
-		  optional int32 TypeIndex = 50002;
+		// define static fields to store message meta data
+		extend google.protobuf.MessageOptions { // see descriptor.proto
+		  optional string TypeCode = 50001; // original fix message type code
+		  optional int32 TypeIndex = 50002; // generated protobuf enum index
 		}
 
 		message Header{ // FIX HEADER
@@ -51,11 +55,6 @@
 			optional Header header = 2; // HEADER
 			optional Trailer trailer = 3; // TRAILER 
 			extensions 100 to max; // BODY POLYMORPH
-		}
-
-		message Decimal {
-			optional sint64 mantissa = 1;
-			optional sint32 exponent = 2;
 		}
 
 		<xsl:apply-templates select="fix/components/component" />

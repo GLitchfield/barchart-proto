@@ -1,0 +1,104 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.barchart.base</groupId>
+		<artifactId>barchart-archon</artifactId>
+		<version>2.1.2</version>
+	</parent>
+
+	<groupId>com.barchart.proto</groupId>
+	<artifactId>barchart-proto-buf</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+
+	<description>
+		protocol for native barchart feed
+	</description>
+
+	<scm>
+		<url>https://github.com/barchart/barchart-proto</url>
+		<connection>scm:git:git://github.com/barchart/barchart-proto.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/barchart/barchart-proto.git</developerConnection>
+	</scm>
+
+	<properties>
+
+	</properties>
+
+	<dependencies>
+
+		<!-- protocol buffers -->
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.4.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<!-- generate java source from proto files -->
+			<plugin>
+				<groupId>com.github.igor-petruk.protobuf</groupId>
+				<artifactId>protobuf-maven-plugin</artifactId>
+				<version>0.5.1</version>
+				<executions>
+					<execution>
+						<id>protocol-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<ignoreVersions>true</ignoreVersions>
+							<inputDirectories>
+								<entry>src/main/resources/protobuf</entry>
+							</inputDirectories>
+							<outputDirectory>target/protobuf</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- make generated java files available for build -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>protocol-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>target/protobuf</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>

@@ -1,0 +1,225 @@
+/**
+ * factory for messages
+ */
+//
+package barchart; // non-java (C, C++, etc) package name space
+
+//
+option java_package = "com.barchart.proto.feed";
+option java_outer_classname = "MessageFactory";
+option java_multiple_files = true;
+option java_generate_equals_and_hash = true;
+//
+option optimize_for = SPEED;
+
+// message fields
+import "FieldFactory.proto";
+
+// message options descriptor
+import "google/descriptor.proto";
+
+// define static message fields for meta data
+extend google.protobuf.MessageOptions {
+	optional int32 MessageTypeIndex = 50001; // message type index
+	optional string MessageTypePrefix = 50002; // message type name prefix
+	optional string MessageEnumPrefix = 50003; // message enum name prefix
+}
+
+// message type
+// note: these enum entries are global to proto file
+// note: order by most frequent first
+enum Type {
+	enum_MarketData = 100;
+	enum_MarketNews = 101;
+	//
+	enum_DataSubscribeRequest = 102;
+	enum_DataSubscribeResponse = 103;
+	//
+	enum_NewsSubscribeRequest = 104;
+	enum_NewsSubscribeResponse = 105;
+	//
+	enum_InstrumentRequest = 106;
+	enum_InstrumentResponse = 107;
+	//
+	enum_LoginRequest = 108;
+	enum_LoginResponse = 109;
+	//
+	enum_MarketStatus = 110;
+	//
+	enum_HeartBeat = 111;
+}
+
+// forward declaration of sub types / extensions
+// note: keep type in sync with enum
+extend Base {
+	optional MarketData type_MarketData = 100;
+	optional MarketNews type_MarketNews = 101;
+	//
+	optional DataSubscribeRequest type_DataSubscribeRequest = 102;
+	optional DataSubscribeResponse type_DataSubscribeResponse = 103;
+	//
+	optional NewsSubscribeRequest type_NewsSubscribeRequest = 104;
+	optional NewsSubscribeResponse type_NewsSubscribeResponse = 105;
+	//
+	optional LoginRequest type_LoginRequest = 106;
+	optional LoginResponse type_LoginResponse = 107;
+	//
+	optional InstrumentRequest type_InstrumentRequest = 108;
+	optional InstrumentResponse type_InstrumentResponse = 109;
+	//
+	optional MarketStatus type_MarketStatus = 110;
+	//
+	optional HeartBeat type_HeartBeat = 111;
+}
+
+// message base for extensions / sub types
+message Base {
+	option (MessageEnumPrefix) = "enum_"; // rule for enum names
+	option (MessageTypePrefix) = "type_"; // rule for type names
+	extensions 100 to max; // message polymorph
+	//
+	optional Type type = 1; // message type selector
+	optional int64 sequence = 2; // message sequence number
+	optional int64 timeStamp = 3; // message time stamp, millis UTC
+}
+
+// ##################################################
+
+// the only market data state change message type
+message MarketData {
+	enum Type {
+		UPDATE = 0;
+		SNAPSHOT = 1;
+		RESET_ALL = 2;
+		RESET_BOOK = 3;
+		RESET_CUVOL = 4;
+	}
+
+	optional Type type = 1;
+	optional int64 marketId = 2;
+	repeated MarketDataEntry entry = 3;
+}
+
+// ##################################################
+
+//
+message MarketNews {
+	enum Type {
+		MARKET_UPDATE = 0;
+		BREAKING_NEWS = 1;
+	}
+
+	optional Type type = 1;
+	optional int64 marketId = 2;
+	repeated MarketNewsEntry entry = 3;
+}
+
+// ##################################################
+
+// login from client to server
+message LoginRequest {
+	optional string username = 1;
+	optional string password = 2;
+}
+
+// response from server to client
+message LoginResponse {
+	enum Status {
+		SUCCESS = 1;
+		FAILURE = 2;
+	}
+
+	optional Status status = 1;
+	optional string comment = 2;
+}
+
+// ##################################################
+
+//
+message InstrumentRequest {
+	optional int64 marketId = 1;
+}
+
+// minimum market-state required entries
+message InstrumentResponse {
+	optional int64 marketId = 1;
+	optional Decimal priceIncrement = 2;
+	optional string marketDescriptor = 3; // complete json object
+}
+
+// ##################################################
+
+// state transitions
+message MarketStatus {
+	enum Type {
+		OPENED = 0;
+		CLOSED = 1;
+		PRE_OPEN = 2;
+		PRE_CLOSE = 3;
+	}
+
+	optional Type type = 1;
+	optional int64 marketId = 2;
+	optional string comment = 3;
+}
+
+// ##################################################
+
+//
+message DataSubscribeRequest {
+	enum Type {
+		UPDATE = 0;
+		SNAPSHOT = 1;
+	}
+
+	repeated Type type = 1; // empty means none
+	optional int64 marketId = 2;
+}
+
+//
+message DataSubscribeResponse {
+	enum Type {
+		SUCCESS = 0;
+		NOT_AVAILABLE = 1;
+		NOT_AUTHORIZED = 2;
+	}
+
+	optional Type type = 1;
+	optional int64 marketId = 2;
+	optional string comment = 3;
+}
+
+// ##################################################
+
+//
+message NewsSubscribeRequest {
+	enum Type {
+		NONE = 0;
+		UPDATE = 1;
+		SNAPSHOT = 2;
+	}
+
+	repeated Type type = 1;
+	optional int64 marketId = 2;
+}
+
+message NewsSubscribeResponse {
+	enum Type {
+		SUCCESS = 0;
+		NOT_AVAILABLE = 1;
+		NOT_AUTHORIZED = 2;
+	}
+
+	optional Type type = 1;
+	optional int64 marketId = 2;
+	optional string comment = 3;
+}
+
+// ##################################################
+
+// bidirectional keep alive
+message HeartBeat {
+	optional int64 interval = 1;
+}
+
+// ##################################################
