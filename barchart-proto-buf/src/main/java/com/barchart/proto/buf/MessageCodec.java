@@ -111,10 +111,10 @@ public class MessageCodec {
 		final MessageType type = base.getType();
 
 		switch (type) {
-		case Type_MarketData:
+		case MarketDataType:
 			visitor.visit(castType(base, MarketData.class));
 			break;
-		case Type_MarketNews:
+		case MarketNewsType:
 			visitor.visit(castType(base, MarketNews.class));
 			break;
 

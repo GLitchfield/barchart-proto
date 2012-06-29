@@ -22,31 +22,31 @@ import "FieldSpec.proto";
 extend google.protobuf.MessageOptions {
 	optional int32 optionTypeIndex = 50001; // message type index
 	optional string optionExtensionPrefix = 50002; // message type name prefix
-	optional string optionEnumNamePrefix = 50003; // message enum name prefix
+	optional string optionEnumNameSuffix = 50003; // message enum name suffix
 }
 
 // message type
 // note: order by most frequent first
-// note: must use prefix due to global scope
+// note: must use suffix due to global scope
 enum MessageType {
-	Type_MarketData = 100;
-	Type_MarketNews = 101;
+	MarketDataType = 100;
+	MarketNewsType = 101;
 	//
-	Type_DataSubscribeRequest = 102;
-	Type_DataSubscribeResponse = 103;
+	DataSubscribeRequestType = 102;
+	DataSubscribeResponseType = 103;
 	//
-	Type_NewsSubscribeRequest = 104;
-	Type_NewsSubscribeResponse = 105;
+	NewsSubscribeRequestType = 104;
+	NewsSubscribeResponseType = 105;
 	//
-	Type_InstrumentRequest = 106;
-	Type_InstrumentResponse = 107;
+	InstrumentRequestType = 106;
+	InstrumentResponseType = 107;
 	//
-	Type_LoginRequest = 108;
-	Type_LoginResponse = 109;
+	LoginRequestType = 108;
+	LoginResponseType = 109;
 	//
-	Type_MarketStatus = 110;
+	MarketStatusType = 110;
 	//
-	Type_HeartBeat = 111;
+	HeartBeatType = 111;
 }
 
 // forward declaration of sub types / extensions
@@ -75,7 +75,7 @@ extend Base {
 
 // message base for extensions / sub types
 message Base {
-	option (optionEnumNamePrefix) = "Type_"; // rule for enum names
+	option (optionEnumNameSuffix) = "Type"; // rule for enum names
 	option (optionExtensionPrefix) = "message"; // rule for extension names
 	extensions 100 to max; // message polymorph range
 	//
