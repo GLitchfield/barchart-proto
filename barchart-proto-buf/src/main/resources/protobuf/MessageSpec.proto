@@ -6,14 +6,14 @@ package barchart; // non-java (C, C++, etc) package name space
 
 //
 option java_package = "com.barchart.proto.buf";
-option java_outer_classname = "MessageFactory";
+option java_outer_classname = "MessageSpec";
 option java_multiple_files = true;
 option java_generate_equals_and_hash = true;
 //
 option optimize_for = SPEED;
 
 // message fields
-import "FieldFactory.proto";
+import "FieldSpec.proto";
 
 // message options descriptor
 import "google/descriptor.proto";
