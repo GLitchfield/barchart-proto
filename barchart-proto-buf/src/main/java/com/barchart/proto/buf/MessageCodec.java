@@ -32,7 +32,7 @@ public class MessageCodec {
 
 	/**
 	 * note: 1) extension name contract; 2) enum name contract; 3) enum +
-	 * extendson number contract
+	 * extension number contract
 	 */
 	private static void prepareExtensions(final ExtensionRegistry registry) {
 
